@@ -42,7 +42,7 @@ const App = () => {
         <Headers menuType={menuType} setMenuType={setMenuType} onModal={showNotification} />
         <Contents menuType={menuType} setMenuType={setMenuType} onModal={showNotification} />
         <Footer style={{ textAlign: 'center' }}>
-          Ant Design ©{new Date().getFullYear()} Created by Ant UED
+          {/* Ant Design ©{new Date().getFullYear()} Created by Ant UED */}
         </Footer>
       </BrowserRouter>
     </Layout>
