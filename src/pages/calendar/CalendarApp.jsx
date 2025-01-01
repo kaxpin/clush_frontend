@@ -15,9 +15,10 @@ export default function CalendarApp(props) {
   const [rawData, setRawData] = useState([]);
   const { open, setOpen } = usePopupStore()
 
-  let pickedBanner = "month";
-  let targetYear = new Date().getFullYear();
-  let targetMonth = new Date().getMonth();
+  const today = new Date();
+  const [pickedBanner, setPickedBanner] = useState('month');
+  const [targetYear, setTargetYear] = useState(today.getFullYear());
+  const [targetMonth, setTargetMonth] = useState(today.getMonth());
 
   useEffect(() => {
 
@@ -27,9 +28,19 @@ export default function CalendarApp(props) {
         description: "로그인을 해주세요"
       });
       navigate('/Login')
-
       return;
     }
+
+    fetchData();
+
+  }, [pickedBanner, targetYear, targetMonth])
+
+  //데이터 페칭
+  function fetchData() {
+
+    console.log("##fetching start")
+    console.log(pickedBanner, targetYear, targetMonth + 1, userId)
+
 
     selectCalendarInfo(pickedBanner, targetYear, targetMonth + 1, userId)
       .then((res) => {
@@ -45,21 +56,11 @@ export default function CalendarApp(props) {
         setRawData(data);
       }
       )
-  }, [])
+  }
 
-  const formatDate = (date) => {
-    date = new Date(date)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
 
-    return parseInt(`${year}${month}${day}`)
-  };
-
-  const isDateInRange = (targetDate, startDate, endDate) => {
-    return targetDate >= startDate && targetDate <= endDate;
-  };
-  const getListData = (value, rawData) => {
+  ////cellRender-3 : 데이터 정보를 배열로 저장 
+  const getDateData = (value, rawData) => {
 
     const valueStr = formatDate(value)
     let listData = [];
@@ -83,18 +84,9 @@ export default function CalendarApp(props) {
     }
   };
 
-  const monthCellRender = (value) => {
-    const num = getMonthData(value);
-    return num ? (
-      <div className="notes-month">
-        <section>{num}</section>
-        <span>Backlog number</span>
-      </div>
-    ) : null;
-  };
-
+  //cellRender-2 배열형태의 데이터를 캘린더에 표시
   const dateCellRender = (value) => {
-    const listData = getListData(value, rawData);
+    const listData = getDateData(value, rawData);
     return (
       <ul className="events">
         {listData.map((item) => (
@@ -106,40 +98,84 @@ export default function CalendarApp(props) {
     );
   };
 
+  const monthCellRender = (value) => {
+    const num = getMonthData(value);
+    return num ? (
+      <div className="notes-month">
+        <section>{num}</section>
+        <span>Backlog number</span>
+      </div>
+    ) : null;
+  };
+
+
+  //cellRender-1(캘린더 전환시 호출되는 순)
   const cellRender = (current, info) => {
 
     if (info.type === 'date') {
-      pickedBanner = "month";
       return dateCellRender(current)
     };
 
     if (info.type === 'month') {
-      pickedBanner = "year";
       return monthCellRender(current);
     }
     return info.originNode;
   };
 
-  return <><Calendar cellRender={cellRender}
+  //캘린더 전환즉시 호출
+  const onPanelChange = (value, type) => {
+    console.log("onPanelChange", value, type);
 
-    onSelect={(item, type) => {
+    if (type == 'month') {
+      setTargetMonth(value.month());
+      setTargetYear(value.year());
+      setPickedBanner("month");
+    };
 
-      targetYear = item.$y;
-      targetMonth = item.$M;
+    if (type == 'year') {
+      setTargetYear(value.year());
+      setPickedBanner("year");
+    }
+  }
+  //util 함수
+  function formatDate(date) {
+    date = new Date(date)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
 
-      if (pickedBanner === "year") {
+    return parseInt(`${year}${month}${day}`)
+  };
 
-        if (type.source === "month") {
-          setOpen(true);
-        }
+  function isDateInRange(targetDate, startDate, endDate) {
+    return targetDate >= startDate && targetDate <= endDate;
+  };
 
-        if (type.source === "year") {
-        }
 
-      } else {
-        if (type.source === "date") {
-          setOpen(true);
+  return <>
+    <Calendar
+      onPanelChange={onPanelChange}
+      cellRender={cellRender}
+      onSelect={(item, type) => {
+        //아래 변수는 일단 보류
+        // targetYear = item.$y;
+        // targetMonth = item.$M;
+
+        //banner => 'Year'선택
+        if (pickedBanner === "year") {
+
+          if (type.source === "month") {
+            setOpen(true);
+          }
+
+          if (type.source === "year") {
+          }
+
+          //banner => 'Month'선택
         } else {
+
+          //날짜(셀) 클릭시  
+          if (type.source === "date") setOpen(true);
 
           if (type.source === "month") {
           }
@@ -147,11 +183,9 @@ export default function CalendarApp(props) {
           if (type.source === "year") {
           }
         }
-      }
+      }}
 
-    }}
-
-  />
+    />
     <Calendarpop type={pickedBanner}
       onClose={() => { setOpen(false) }}
       open={open}
