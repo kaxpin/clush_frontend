@@ -6,12 +6,14 @@ export const createAccount = (data) => {
 }
 
 //아이디 중복검사 o
-export const checkDupId = (userId)=> {
+export const checkDupId = (userId) => {
     return apiClient.get(`/auth/signup/check/${userId}`
-)}
- 
+    )
+}
+
 //로그인 
 export const onLogin = (data) => {
+    console.log(data)
     return apiClient.post(`/auth/login`, data)
 }
 

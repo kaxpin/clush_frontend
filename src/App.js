@@ -56,8 +56,6 @@ const SideEffectComp = (props) => {
     props.setMenuType(location.pathname.replace("/", ""))
   }, [location]);
 
-
-
   return null;
 }
 

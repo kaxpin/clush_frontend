@@ -11,18 +11,18 @@ export default function Login() {
     const navigate = useNavigate();
     const { Title } = Typography;
 
-    const clickLogin = (values) => {
+    const onClickLogin = (values) => {
 
         onLogin(values)
             .then((res) => {
-                console.log(res)
+                console.log(res);
                 if (!res.data.data) {
-                    alert("아이디와 비밀번호를 확인해 주세요.")
-                    return
+                    alert("아이디와 비밀번호를 확인해 주세요.");
+                    return;
                 }
 
-                login(values.userId)
-                navigate('/Calendar')
+                login(res.data.data.user_id);
+                navigate('/Calendar');
             })
 
     };
@@ -30,6 +30,7 @@ export default function Login() {
         console.log('Failed:', errorInfo);
     };
 
+    console.log("재렌더링");
     return (<>
         <Form
             name="basic"
@@ -37,7 +38,7 @@ export default function Login() {
             wrapperCol={{ span: 17 }}
             style={{ maxWidth: 600 }}
             initialValues={{ remember: true }}
-            onFinish={clickLogin}
+            onFinish={onClickLogin}
             onFinishFailed={onFinishFailed}
             autoComplete="off"
         >
@@ -50,7 +51,7 @@ export default function Login() {
 
             <Form.Item
                 label="Id"
-                name="userId"
+                name="user_id"
                 rules={[{ required: true, message: 'Please input your Id!' }]}
             >
                 <Input />
@@ -58,7 +59,7 @@ export default function Login() {
 
             <Form.Item
                 label="Password"
-                name="userPw"
+                name="user_pw"
                 rules={[{ required: true, message: 'Please input your password!' }]}
             >
                 <Input.Password />
@@ -72,9 +73,6 @@ export default function Login() {
                     onClick={() => { navigate('/Register') }} >
                     회원이 아니신가요? 회원가입
                 </Button>
-
-
-
 
             </Form.Item>
         </Form>

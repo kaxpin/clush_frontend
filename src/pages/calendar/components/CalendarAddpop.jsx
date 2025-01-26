@@ -6,7 +6,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 
 const { Option } = Select;
 
-export default function Calendarpop({ open, setOpen, pickedBanner }) {
+export default function Calendarpop({ open, setOpen, refresh, setRefresh }) {
 
   const { userId } = useAuthStore();
   const [isSubmit, setIsSubmit] = useState(false);
@@ -16,20 +16,25 @@ export default function Calendarpop({ open, setOpen, pickedBanner }) {
 
     const data = {
       ...values,
-      writeDate: new Date(),
-      startDate: new Date(values.dateTime[0].$d),
-      endDate: new Date(values.dateTime[1].$d),
-      writerId: userId,
-      groupId: values.groupId === "private" ? 0 : parseInt(values.groupId),
+      write_date: new Date(),
+      start_date: new Date(values.dateTime[0].$d),
+      end_date: new Date(values.dateTime[1].$d),
+      writer_id: userId,
+      group_id: values.groupId === "private" ? 0 : parseInt(values.groupId),
+      // writeDate: new Date(),
+      // startDate: new Date(values.dateTime[0].$d),
+      // endDate: new Date(values.dateTime[1].$d),
+      // writerId: userId,
+      // groupId: values.groupId === "private" ? 0 : parseInt(values.groupId),
     }
 
     delete data.dateTime
 
     createCalendar(data)
-      .then((res) => {
-
-        setIsSubmit((prev) => !prev)
-        onClose()
+      .then(() => {
+        setIsSubmit(prev => !prev);
+        onClose();
+        setRefresh(prev => !prev);
         navigate('/Calendar')
       })
   };
@@ -84,7 +89,7 @@ export default function Calendarpop({ open, setOpen, pickedBanner }) {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="indexColor"
+                name="index_color"
                 label="유형"
                 rules={[{ required: true, message: 'Please select an index' }]}
               >
@@ -123,7 +128,7 @@ export default function Calendarpop({ open, setOpen, pickedBanner }) {
             </Col>
             <Col span={12}>
               <Form.Item
-                name="groupId"
+                name="group_id"
                 label="개인/그룹"
                 rules={[{ required: true, message: 'Please choose the approver' }]}
               >
@@ -155,7 +160,7 @@ export default function Calendarpop({ open, setOpen, pickedBanner }) {
             </Col>
           </Row>
           <Form.Item label={null} style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button type="primary" htmlType="submit" >
+            <Button type="primary" htmlType="submit">
               등록
             </Button>
 

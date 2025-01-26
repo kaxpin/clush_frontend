@@ -43,9 +43,8 @@ export default Headers = (props) => {
     })
   }
 
-  useEffect(() => {
-
-  }, [props.menuType])
+  // useEffect(() => {
+  // }, [props.menuType])
 
   return (
     <Header style={{ display: 'flex', alignItems: 'center' }}>
